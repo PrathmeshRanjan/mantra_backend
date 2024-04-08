@@ -1,5 +1,7 @@
 # Stockholm CosmWasm Smart Contracts
 
+** Frontend repo ** - https://github.com/PrathmeshRanjan/mantra-frontend
+
 This document provides an overview of four CosmWasm smart contracts designed for a Real-World Asset (RWA) platform. The contracts facilitate various functionalities such as trading NFTs representing RWAs, swapping gold tokens with OM tokens, managing a liquidity pool, and staking RWAs for rewards.
 
 ## 1. RWA NFT Trading Contract
