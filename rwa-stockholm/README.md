@@ -1,85 +1,61 @@
-# CosmWasm Starter Pack
+# Stockholm CosmWasm Smart Contracts
 
-This is a template to build smart contracts in Rust to run inside a
-[Cosmos SDK](https://github.com/cosmos/cosmos-sdk) module on all chains that enable it.
-To understand the framework better, please read the overview in the
-[cosmwasm repo](https://github.com/CosmWasm/cosmwasm/blob/master/README.md),
-and dig into the [cosmwasm docs](https://www.cosmwasm.com).
-This assumes you understand the theory and just want to get coding.
+This document provides an overview of four CosmWasm smart contracts designed for a Real-World Asset (RWA) platform. The contracts facilitate various functionalities such as trading NFTs representing RWAs, swapping gold tokens with OM tokens, managing a liquidity pool, and staking RWAs for rewards.
 
-## Creating a new repo from template
+## 1. RWA NFT Trading Contract
 
-Assuming you have a recent version of Rust and Cargo installed
-(via [rustup](https://rustup.rs/)),
-then the following should get you a new repo to start a contract:
+### Functions:
+- **Mint NFTs**: Represent RWAs as NFTs on the blockchain.
+- **List NFTs for Sale**: Allow NFT owners to list their NFTs for sale, specifying a price.
+- **Buy NFTs**: Enable users to purchase listed NFTs, transferring ownership and handling payment.
 
-Install [cargo-generate](https://github.com/ashleygwilliams/cargo-generate) and cargo-run-script.
-Unless you did that before, run this line now:
+### Operation:
+The contract uses the CW721 base for NFT functionality, extending it with sale listing and buying features. Ownership verification is performed before listing, ensuring that only the NFT owner can initiate a sale. The purchase function transfers funds from the buyer to the seller and updates the NFT ownership.
 
-```sh
-cargo install cargo-generate --features vendored-openssl
-cargo install cargo-run-script
-```
+### Production Readiness:
+- Implement robust error handling and input validation to ensure security and data integrity.
+- Integrate with an oracle or a trusted external system for verifying RWAs tied to NFTs.
+- Add event logging for critical actions to facilitate monitoring and auditing.
 
-Now, use it to create your new contract.
-Go to the folder in which you want to place it and run:
+## 2. Gold-OM Token Swap Contract
 
-**Latest**
+### Functions:
+- **Set Exchange Rate**: Allow the admin to set the exchange rate between gold tokens and OM tokens.
+- **Swap Tokens**: Users can swap their gold tokens for OM tokens based on the current exchange rate.
 
-```sh
-cargo generate --git https://github.com/CosmWasm/cw-template.git --name PROJECT_NAME
-```
+### Operation:
+The contract maintains an exchange rate state variable that the admin can update. When users send gold tokens to the contract, it calculates the equivalent OM tokens using the exchange rate and transfers the OM tokens to the user's account.
 
-For cloning minimal code repo:
+### Production Readiness:
+- Implement rate-limiting and slippage control to protect against market manipulation and flash crashes.
+- Introduce a mechanism for dynamic exchange rate adjustment based on market conditions or through a decentralized oracle.
+- Ensure compliance with legal and regulatory requirements for token swaps and financial transactions.
 
-```sh
-cargo generate --git https://github.com/CosmWasm/cw-template.git --name PROJECT_NAME -d minimal=true
-```
+## 3. Liquidity Pool Contract
 
-You will now have a new folder called `PROJECT_NAME` (I hope you changed that to something else)
-containing a simple working contract and build system that you can customize.
+### Functions:
+- **Deposit Tokens**: Users can deposit OM tokens or RWAs (represented as tokens) into the liquidity pool.
+- **Withdraw Assets**: Allow users to withdraw their deposited assets from the pool.
 
-## Create a Repo
+### Operation:
+The contract tracks the total pool balances for OM tokens and RWAs. Users can add to the pool by depositing assets, which updates the pool's balance. Withdrawals are processed by deducting from the pool balance and transferring assets back to the user.
 
-After generating, you have a initialized local git repo, but no commits, and no remote.
-Go to a server (eg. github) and create a new upstream repo (called `YOUR-GIT-URL` below).
-Then run the following:
+### Production Readiness:
+- Implement liquidity provider (LP) tokens to represent ownership in the pool, enabling fair distribution of fees and rewards.
+- Add functionality for yield farming or earning interest on deposited assets to incentivize liquidity provision.
+- Incorporate security measures like timelocks and multi-sig requirements for critical administrative functions.
 
-```sh
-# this is needed to create a valid Cargo.lock file (see below)
-cargo check
-git branch -M main
-git add .
-git commit -m 'Initial Commit'
-git remote add origin YOUR-GIT-URL
-git push -u origin main
-```
+## 4. RWA Staking Contract
 
-## CI Support
+### Functions:
+- **Stake NFTs**: Users can stake their NFTs representing RWAs to earn rewards.
+- **Unstake NFTs**: Allow users to unstake their NFTs and stop earning rewards.
+- **Claim Rewards**: Users can claim their accrued rewards in OM tokens.
 
-We have template configurations for both [GitHub Actions](.github/workflows/Basic.yml)
-and [Circle CI](.circleci/config.yml) in the generated project, so you can
-get up and running with CI right away.
+### Operation:
+The contract allows users to stake NFTs by locking them into the contract. A staking duration is tracked for each NFT, which determines the reward amount based on a predefined rate. Users can unstake their NFTs and claim their rewards, which are paid out in OM tokens.
 
-One note is that the CI runs all `cargo` commands
-with `--locked` to ensure it uses the exact same versions as you have locally. This also means
-you must have an up-to-date `Cargo.lock` file, which is not auto-generated.
-The first time you set up the project (or after adding any dep), you should ensure the
-`Cargo.lock` file is updated, so the CI will test properly. This can be done simply by
-running `cargo check` or `cargo unit-test`.
-
-## Using your project
-
-Once you have your custom repo, you should check out [Developing](./Developing.md) to explain
-more on how to run tests and develop code. Or go through the
-[online tutorial](https://docs.cosmwasm.com/) to get a better feel
-of how to develop.
-
-[Publishing](./Publishing.md) contains useful information on how to publish your contract
-to the world, once you are ready to deploy it on a running blockchain. And
-[Importing](./Importing.md) contains information about pulling in other contracts or crates
-that have been published.
-
-Please replace this README file with information about your specific project. You can keep
-the `Developing.md` and `Publishing.md` files as useful references, but please set some
-proper description in the README.
+### Production Readiness:
+- Introduce a mechanism for adjusting staking rewards based on total staked assets and pool performance.
+- Add safeguards against re-entrancy attacks and ensure contract interactions are secure.
+- Consider integrating with insurance or collateralization services to protect staked assets and guarantee reward payouts.
